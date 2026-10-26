@@ -1,0 +1,77 @@
+/* Shared base */
+:root {
+    --color-background: #f4f6f8;
+    --color-text: #17212b;
+    --color-arena: #e3edf5;
+    --color-player: #235a9f;
+    --color-obstacle: #853b2c;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--color-background);
+    color: var(--color-text);
+    font-family: system-ui, sans-serif;
+    line-height: 1.5;
+}
+
+/* Page layout and controls — Tahlia */
+.game-page {
+    width: min(100% - 2rem, 50rem);
+    margin: 2rem auto;
+}
+
+#game-area {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 800 / 300;
+    overflow: hidden;
+    background: var(--color-arena);
+    outline: 2px solid var(--color-text);
+}
+
+.game-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+button {
+    padding: 0.6rem 1.2rem;
+    font: inherit;
+    cursor: pointer;
+}
+
+button:disabled {
+    cursor: default;
+}
+
+button:focus-visible {
+    outline: 3px solid var(--color-player);
+    outline-offset: 3px;
+}
+
+/* Character — Aspa */
+#player {
+    position: absolute;
+    left: 8%;
+    bottom: 0;
+    width: 5%;
+    height: 16%;
+    background: var(--color-player);
+}
+
+/* Obstacles — Betim */
+#obstacles {
+    position: absolute;
+    inset: 0;
+}
+
+.obstacle {
+    position: absolute;
+    background: var(--color-obstacle);
+}
