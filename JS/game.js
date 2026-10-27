@@ -92,7 +92,7 @@ setupGameControls();
 
 
 function endGame() {
-    gameState.status = "gameOver";
+    gameState.status = "over";
 
     if (animationFrameId !== null) {
         cancelAnimationFrame(animationFrameId);
