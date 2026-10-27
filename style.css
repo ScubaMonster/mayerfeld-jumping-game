@@ -57,7 +57,7 @@ button:focus-visible {
 
 /* Character — Aspa */
 #player {
-    --player-art: none;
+    --player-art: url("Assets/player.svg");
 
     position: absolute;
     left: 8%;
@@ -65,19 +65,15 @@ button:focus-visible {
     width: 5%;
     height: 16%;
 
-    background-color: var(--color-player);
+    background-color: transparent;
     background-image: var(--player-art);
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
-
-    border-radius: 0.25rem;
-    box-shadow: inset 0 -0.25rem 0 rgb(0 0 0 / 20%);
 }
 
 #player.is-airborne {
     filter: brightness(1.2);
-    box-shadow: inset 0 0 0 2px rgb(255 255 255 / 60%);
 }
 
 /* Obstacles — Betim */
