@@ -1,14 +1,5 @@
 "use strict";
 
-// Person B — Betim
-// Obstacles and collision detection.
-
-// Public functions:
-// resetObstacles() — reset obstacle state and spawn timing.
-// updateObstacles(deltaTime) — coordinate obstacle state updates.
-// renderObstacles() — synchronize obstacle elements with state.
-// hasCollision() — return true or false.
-
 // Obstacle settings
 let spawnTimer = 0;
 
@@ -16,7 +7,7 @@ const spawnInterval = 2;
 const obstacleSpeed = 200;
 
 
-// Creates a new obstacle, adds it to the game, and stores it in the obstacles array.
+// Creates and stores a new obstacle.
 function createObstacle() {
 
     const obstacle = {
@@ -28,38 +19,99 @@ function createObstacle() {
         element: null
     };
 
-    const box = document.createElement("div");
-
-    box.classList.add("obstacle");
-
-    const container = document.getElementById("obstacles");
-
-    container.appendChild(box);
-
-    obstacle.element = box;
-
-    box.style.left =
-        (obstacle.x / WORLD_WIDTH) * 100 + "%";
-
-    box.style.bottom =
-        (obstacle.y / WORLD_HEIGHT) * 100 + "%";
-
-    box.style.width =
-        (obstacle.width / WORLD_WIDTH) * 100 + "%";
-
-    box.style.height =
-        (obstacle.height / WORLD_HEIGHT) * 100 + "%";
-
     gameState.obstacles.push(obstacle);
 }
 
 
-// Removes all obstacles and resets the timer when the game restarts.
-function resetObstacles() {
+// Creates obstacles at regular intervals.
+function spawnObstacles(deltaTime) {
+
+    spawnTimer += deltaTime;
+
+    while (spawnTimer >= spawnInterval) {
+        createObstacle();
+        spawnTimer -= spawnInterval;
+    }
+}
+
+
+// Moves all obstacles from right to left.
+function moveObstacles(deltaTime) {
 
     gameState.obstacles.forEach(function(obstacle) {
-        obstacle.element.remove();
+        obstacle.x -= obstacleSpeed * deltaTime;
     });
+}
+
+
+// Removes off-screen obstacles from the array.
+function removeOffscreenObstacles() {
+
+    gameState.obstacles = gameState.obstacles.filter(function(obstacle) {
+        return obstacle.x + obstacle.width >= 0;
+    });
+}
+
+
+// Updates obstacle data without changing the HTML.
+function updateObstacles(deltaTime) {
+
+    spawnObstacles(deltaTime);
+
+    moveObstacles(deltaTime);
+
+    removeOffscreenObstacles();
+}
+
+
+// Creates, positions, and removes obstacle HTML elements.
+function renderObstacles() {
+
+    const container = document.getElementById("obstacles");
+
+    // Remove HTML elements that are no longer in the obstacle array.
+    const activeElements = new Set(
+        gameState.obstacles.map(function(obstacle) {
+            return obstacle.element;
+        })
+    );
+
+    container.querySelectorAll(".obstacle").forEach(function(element) {
+        if (!activeElements.has(element)) {
+            element.remove();
+        }
+    });
+
+    gameState.obstacles.forEach(function(obstacle) {
+
+        if (obstacle.element === null) {
+
+            const box = document.createElement("div");
+
+            box.classList.add("obstacle");
+
+            container.appendChild(box);
+
+            obstacle.element = box;
+        }
+
+        obstacle.element.style.left =
+            (obstacle.x / WORLD_WIDTH) * 100 + "%";
+
+        obstacle.element.style.bottom =
+            (obstacle.y / WORLD_HEIGHT) * 100 + "%";
+
+        obstacle.element.style.width =
+            (obstacle.width / WORLD_WIDTH) * 100 + "%";
+
+        obstacle.element.style.height =
+            (obstacle.height / WORLD_HEIGHT) * 100 + "%";
+    });
+}
+
+
+// Resets obstacle data and the spawn timer.
+function resetObstacles() {
 
     gameState.obstacles = [];
 
@@ -67,38 +119,7 @@ function resetObstacles() {
 }
 
 
-// Creates obstacles every 2 seconds, moves them left, and removes them when they leave the screen.
-function updateObstacles(deltaTime) {
-
-    spawnTimer += deltaTime;
-
-    if (spawnTimer >= spawnInterval) {
-        createObstacle();
-        spawnTimer -= spawnInterval;
-    }
-
-    gameState.obstacles.forEach(function(obstacle) {
-
-        obstacle.x -= obstacleSpeed * deltaTime;
-
-        obstacle.element.style.left =
-            (obstacle.x / WORLD_WIDTH) * 100 + "%";
-
-    });
-
-    gameState.obstacles = gameState.obstacles.filter(function(obstacle) {
-
-        if (obstacle.x + obstacle.width < 0) {
-            obstacle.element.remove();
-            return false;
-        }
-
-        return true;
-    });
-}
-
-
-// Checks if the player touches any obstacle using horizontal and vertical collision detection.
+// Checks whether the player touches an obstacle.
 function hasCollision() {
 
     const player = gameState.player;
@@ -120,7 +141,6 @@ function hasCollision() {
 
     return false;
 }
-
 
 
 // Keep spawning, movement, and removal in focused helper functions.
