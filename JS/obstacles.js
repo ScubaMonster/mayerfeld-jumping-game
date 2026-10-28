@@ -20,8 +20,8 @@ function createObstacle() {
     const obstacle = {
         x: WORLD_WIDTH,
         y: 0,
-        width: 30,
-        height: 40,
+        width: 45,
+        height: 48,
         counted: false,
         element: null
     };
@@ -128,28 +128,40 @@ function resetObstacles() {
     spawnInterval = getRandomSpawnInterval();
 }
 
+// Calculate collision bounds inside the artwork's transparent margins.
+function getCollisionBounds(entity, horizontalInset, verticalInset) {
+  const insetX = entity.width * horizontalInset;
+  const insetY = entity.height * verticalInset;
+
+  return {
+    left: entity.x + insetX,
+    right: entity.x + entity.width - insetX,
+    bottom: entity.y + insetY,
+    top: entity.y + entity.height - insetY
+  };
+}
 
 // Checks whether the player touches an obstacle.
 function hasCollision() {
+  const player = getCollisionBounds(gameState.player, 0.12, 0.16);
 
-    const player = gameState.player;
+  for (const obstacle of gameState.obstacles) {
+    const crab = getCollisionBounds(obstacle, 0.15, 0.22);
 
-    for (const obstacle of gameState.obstacles) {
+    const collisionX =
+      player.left < crab.right &&
+      player.right > crab.left;
 
-        const collisionX =
-            player.x < obstacle.x + obstacle.width &&
-            player.x + player.width > obstacle.x;
+    const collisionY =
+      player.bottom < crab.top &&
+      player.top > crab.bottom;
 
-        const collisionY =
-            player.y < obstacle.y + obstacle.height &&
-            player.y + player.height > obstacle.y;
-
-        if (collisionX && collisionY) {
-            return true;
-        }
+    if (collisionX && collisionY) {
+      return true;
     }
+  }
 
-    return false;
+  return false;
 }
 
 

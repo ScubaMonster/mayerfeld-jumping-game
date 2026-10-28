@@ -12,8 +12,8 @@ const gameState = {
     player: {
         x: 64,
         y: 0,
-        width: 40,
-        height: 48,
+        width: 60,
+        height: 72,
         velocityY: 0,
         grounded: true
     },

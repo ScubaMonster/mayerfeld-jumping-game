@@ -26,12 +26,22 @@ body {
 }
 
 #game-area {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 800 / 300;
-    overflow: hidden;
-    background: var(--color-arena);
-    outline: 2px solid var(--color-text);
+  position: relative;
+  width: 100%;
+  aspect-ratio: 800 / 300;
+  overflow: hidden;
+
+  background:
+    url("Assets/ocean-background.svg")
+      center bottom / cover no-repeat,
+    linear-gradient(
+      to bottom,
+      #a5f3fc 0%,
+      #38bdf8 45%,
+      #075985 100%
+    );
+
+  outline: 2px solid var(--color-text);
 }
 
 .game-controls {
@@ -62,8 +72,8 @@ button:focus-visible {
     position: absolute;
     left: 8%;
     bottom: 0;
-    width: 5%;
-    height: 16%;
+    width: 7.5%;
+    height: 24%;
 
     background-color: transparent;
     background-image: var(--player-art);
@@ -83,6 +93,8 @@ button:focus-visible {
 }
 
 .obstacle {
-    position: absolute;
-    background: var(--color-obstacle);
+  position: absolute;
+  background:
+    url("Assets/crab.svg")
+    center bottom / contain no-repeat;
 }
