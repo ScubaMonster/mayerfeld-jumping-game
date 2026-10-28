@@ -28,8 +28,8 @@ function resetPlayer() {
 
   player.x = 64;
   player.y = 0;
-  player.width = 40;
-  player.height = 48;
+  player.width = 60;
+  player.height = 72;
   player.velocityY = 0;
   player.grounded = true;
 }

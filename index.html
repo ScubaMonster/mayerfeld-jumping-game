@@ -13,44 +13,46 @@
   </head>
   <body>
     <main class="game-page">
-    <h1>Jumping Game</h1>
+      <h1>Jumping Game</h1>
 
-    <p id="game-instructions">
-        Press Start, then use Space to jump over obstacles.
-        Each obstacle passed earns one point.
-    </p>
+      <p id="game-instructions">
+        Explore the reef, dodge the cheeky crabs, and keep your adventure going!
+        Press Space to jump. Each crab you pass earns one point. Hint: Be
+        careful of the sharks!
+      </p>
 
-    <section class="game-panel" aria-labelledby="game-heading">
+      <section class="game-panel" aria-labelledby="game-heading">
         <h2 id="game-heading">Play area</h2>
 
         <p class="score-label">
-            Score:
-            <output id="score" aria-label="Score">0</output>
+          Score:
+          <output id="score" aria-label="Score">0</output>
         </p>
 
         <div id="game-area">
-            <!-- Aspa: character -->
-            <div id="player" aria-hidden="true"></div>
+          <!-- Aspa: character -->
+          <div id="player" aria-hidden="true"></div>
 
-            <!-- Betim: obstacles -->
-            <div id="obstacles" aria-hidden="true"></div>
+          <!-- Betim: obstacles -->
+          <div id="obstacles" aria-hidden="true"></div>
         </div>
 
         <!-- Tahlia: messages and controls -->
-        <p id="game-message" role="status">
-            Game setup in progress.
-        </p>
+        <p id="game-message" role="status">Ready? Press Start to begin.</p>
 
         <div class="game-controls">
-            <button id="start-button" type="button" disabled>
-                Start
-            </button>
+          <button id="start-button" type="button" disabled>Start</button>
 
-            <button id="restart-button" type="button" hidden>
-                Restart
-            </button>
+          <button id="restart-button" type="button" hidden>Restart</button>
         </div>
-    </section>
-</main>
+      </section>
+      <p class="artwork-credit">
+        <small>
+          <a href="https://www.vecteezy.com/free-vector/ocean">
+            Ocean Vectors by Vecteezy
+          </a>
+        </small>
+      </p>
+    </main>
   </body>
 </html>

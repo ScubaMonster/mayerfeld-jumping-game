@@ -1,4 +1,3 @@
-
 "use strict";
 
 const scoreElement = document.querySelector("#score");
@@ -11,147 +10,135 @@ let previousTimestamp = null;
 
 // Displays the current score.
 function renderScore() {
-    scoreElement.textContent = gameState.score;
+  scoreElement.textContent = gameState.score;
 }
 
 // Counts each obstacle once after it passes the player.
 function updateScore() {
-    gameState.obstacles.forEach(function (obstacle) {
-        if (
-            !obstacle.counted &&
-            obstacle.x + obstacle.width < gameState.player.x
-        ) {
-            gameState.score++;
-            obstacle.counted = true;
-        }
-    });
+  gameState.obstacles.forEach(function (obstacle) {
+    if (!obstacle.counted && obstacle.x + obstacle.width < gameState.player.x) {
+      gameState.score++;
+      obstacle.counted = true;
+    }
+  });
 }
 
 // Starts or restarts the game.
 function startGame() {
-    if (animationFrameId !== null) {
-        cancelAnimationFrame(animationFrameId);
-        animationFrameId = null;
-    }
+  if (animationFrameId !== null) {
+    cancelAnimationFrame(animationFrameId);
+    animationFrameId = null;
+  }
 
-    gameState.status = "running";
-    gameState.score = 0;
+  gameState.status = "running";
+  gameState.score = 0;
 
-    resetPlayer();
-    resetObstacles();
+  resetPlayer();
+  resetObstacles();
 
-    renderPlayer();
-    renderObstacles();
-    renderScore();
+  renderPlayer();
+  renderObstacles();
+  renderScore();
 
-    messageElement.textContent =
-        "Game on! Press Space to jump over obstacles.";
+  messageElement.textContent = "Game on! Press Space to jump over obstacles.";
 
-    startButton.disabled = true;
-    restartButton.hidden = true;
+  startButton.disabled = true;
+  restartButton.hidden = true;
 
-    previousTimestamp = null;
-    animationFrameId = requestAnimationFrame(gameLoop);
+  previousTimestamp = null;
+  animationFrameId = requestAnimationFrame(gameLoop);
 }
 
 // Runs the main game animation loop.
 function gameLoop(timestamp) {
-    if (gameState.status !== "running") {
-        animationFrameId = null;
-        previousTimestamp = null;
-        return;
-    }
+  if (gameState.status !== "running") {
+    animationFrameId = null;
+    previousTimestamp = null;
+    return;
+  }
 
-    let deltaTime = 0;
+  let deltaTime = 0;
 
-    if (previousTimestamp !== null) {
-        deltaTime = Math.min(
-            (timestamp - previousTimestamp) / 1000,
-            0.05
-        );
-    }
+  if (previousTimestamp !== null) {
+    deltaTime = Math.min((timestamp - previousTimestamp) / 1000, 0.05);
+  }
 
-    previousTimestamp = timestamp;
+  previousTimestamp = timestamp;
 
-    // Update the game state.
-    updatePlayer(deltaTime);
-    updateObstacles(deltaTime);
+  // Update the game state.
+  updatePlayer(deltaTime);
+  updateObstacles(deltaTime);
 
-    // End the game immediately if a collision occurs.
-    if (hasCollision()) {
-        endGame();
-        return;
-    }
+  // Show the current positions, including the collision frame.
+  renderPlayer();
+  renderObstacles();
 
-    // Update the score and render the latest state.
-    updateScore();
+  if (hasCollision()) {
+    endGame();
+    return;
+  }
 
-    renderPlayer();
-    renderObstacles();
-    renderScore();
+  updateScore();
+  renderScore();
 
-    // Keep one animation loop running.
-    if (gameState.status === "running") {
-        animationFrameId = requestAnimationFrame(gameLoop);
-    } else {
-        animationFrameId = null;
-        previousTimestamp = null;
-    }
+  // Keep one animation loop running.
+  if (gameState.status === "running") {
+    animationFrameId = requestAnimationFrame(gameLoop);
+  } else {
+    animationFrameId = null;
+    previousTimestamp = null;
+  }
 }
 
 // Handles Space-bar jumping.
 function handleKeyDown(event) {
-    if (event.code !== "Space") {
-        return;
-    }
+  if (event.code !== "Space") {
+    return;
+  }
 
-    // Only prevent the default action during gameplay.
-    if (gameState.status !== "running") {
-        return;
-    }
+  // Only prevent the default action during gameplay.
+  if (gameState.status !== "running") {
+    return;
+  }
 
-    event.preventDefault();
+  event.preventDefault();
 
-    // Ignore repeated keydown events from holding Space.
-    if (event.repeat) {
-        return;
-    }
+  // Ignore repeated keydown events from holding Space.
+  if (event.repeat) {
+    return;
+  }
 
-    jump();
+  jump();
 }
 
 // Connects the buttons and keyboard controls.
 function setupGameControls() {
-    startButton.addEventListener("click", startGame);
-    restartButton.addEventListener("click", startGame);
+  startButton.addEventListener("click", startGame);
+  restartButton.addEventListener("click", startGame);
 
-    document.addEventListener("keydown", handleKeyDown);
+  document.addEventListener("keydown", handleKeyDown);
 
-    startButton.disabled = false;
+  startButton.disabled = false;
 }
 
 // Ends the game and displays the final score.
 function endGame() {
-    gameState.status = "over";
+  gameState.status = "over";
 
-    if (animationFrameId !== null) {
-        cancelAnimationFrame(animationFrameId);
-        animationFrameId = null;
-    }
+  if (animationFrameId !== null) {
+    cancelAnimationFrame(animationFrameId);
+    animationFrameId = null;
+  }
 
-    previousTimestamp = null;
+  previousTimestamp = null;
 
-    messageElement.textContent =
-        `Game over! Your final score is ${gameState.score}.`;
+  messageElement.textContent = `Game over! Your final score is ${gameState.score}.`;
 
-    startButton.disabled = true;
-    restartButton.hidden = false;
+  startButton.disabled = true;
+  restartButton.hidden = false;
 }
 
 setupGameControls();
-
-
-
 
 // Person C — Tahlia
 // Game lifecycle, controls, scoring, and interface.
