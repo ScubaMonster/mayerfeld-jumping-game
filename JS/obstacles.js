@@ -3,9 +3,16 @@
 // Obstacle settings
 let spawnTimer = 0;
 
-const spawnInterval = 2;
+const minSpawnInterval = 1.8;
+const maxSpawnInterval = 3;
 const obstacleSpeed = 200;
 
+let spawnInterval = getRandomSpawnInterval();
+
+// Chooses a random time between obstacle spawns.
+function getRandomSpawnInterval() {
+    return Math.random() * (maxSpawnInterval - minSpawnInterval) + minSpawnInterval;
+}
 
 // Creates and stores a new obstacle.
 function createObstacle() {
@@ -31,6 +38,7 @@ function spawnObstacles(deltaTime) {
     while (spawnTimer >= spawnInterval) {
         createObstacle();
         spawnTimer -= spawnInterval;
+        spawnInterval = getRandomSpawnInterval();
     }
 }
 
@@ -116,6 +124,8 @@ function resetObstacles() {
     gameState.obstacles = [];
 
     spawnTimer = 0;
+
+    spawnInterval = getRandomSpawnInterval();
 }
 
 
