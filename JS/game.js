@@ -1,3 +1,4 @@
+
 "use strict";
 
 const scoreElement = document.querySelector("#score");
@@ -5,17 +6,43 @@ const messageElement = document.querySelector("#game-message");
 const startButton = document.querySelector("#start-button");
 const restartButton = document.querySelector("#restart-button");
 
-function updateScore() {
+let animationFrameId = null;
+let previousTimestamp = null;
+
+// Displays the current score.
+function renderScore() {
     scoreElement.textContent = gameState.score;
 }
 
+// Counts each obstacle once after it passes the player.
+function updateScore() {
+    gameState.obstacles.forEach(function (obstacle) {
+        if (
+            !obstacle.counted &&
+            obstacle.x + obstacle.width < gameState.player.x
+        ) {
+            gameState.score++;
+            obstacle.counted = true;
+        }
+    });
+}
+
+// Starts or restarts the game.
 function startGame() {
+    if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+    }
+
     gameState.status = "running";
     gameState.score = 0;
 
     resetPlayer();
+    resetObstacles();
+
     renderPlayer();
-    updateScore();
+    renderObstacles();
+    renderScore();
 
     messageElement.textContent =
         "Game on! Press Space to jump over obstacles.";
@@ -23,18 +50,11 @@ function startGame() {
     startButton.disabled = true;
     restartButton.hidden = true;
 
-    if (animationFrameId !== null) {
-        cancelAnimationFrame(animationFrameId);
-    }
-
     previousTimestamp = null;
     animationFrameId = requestAnimationFrame(gameLoop);
 }
 
-
-let animationFrameId = null;
-let previousTimestamp = null;
-
+// Runs the main game animation loop.
 function gameLoop(timestamp) {
     if (gameState.status !== "running") {
         animationFrameId = null;
@@ -53,12 +73,24 @@ function gameLoop(timestamp) {
 
     previousTimestamp = timestamp;
 
+    // Update the game state.
     updatePlayer(deltaTime);
+    updateObstacles(deltaTime);
+
+    // End the game immediately if a collision occurs.
+    if (hasCollision()) {
+        endGame();
+        return;
+    }
+
+    // Update the score and render the latest state.
+    updateScore();
+
     renderPlayer();
+    renderObstacles();
+    renderScore();
 
-    // Betim's obstacle updates, collision check,
-    // and scoring will be added here.
-
+    // Keep one animation loop running.
     if (gameState.status === "running") {
         animationFrameId = requestAnimationFrame(gameLoop);
     } else {
@@ -67,30 +99,38 @@ function gameLoop(timestamp) {
     }
 }
 
-
+// Handles Space-bar jumping.
 function handleKeyDown(event) {
-    if (event.code === "Space") {
-        event.preventDefault();
-
-        if (gameState.status === "running") {
-            jump();
-        }
+    if (event.code !== "Space") {
+        return;
     }
+
+    // Only prevent the default action during gameplay.
+    if (gameState.status !== "running") {
+        return;
+    }
+
+    event.preventDefault();
+
+    // Ignore repeated keydown events from holding Space.
+    if (event.repeat) {
+        return;
+    }
+
+    jump();
 }
 
+// Connects the buttons and keyboard controls.
 function setupGameControls() {
     startButton.addEventListener("click", startGame);
     restartButton.addEventListener("click", startGame);
 
     document.addEventListener("keydown", handleKeyDown);
 
-    // Enable the Start button when controls are ready.
     startButton.disabled = false;
 }
 
-setupGameControls();
-
-
+// Ends the game and displays the final score.
 function endGame() {
     gameState.status = "over";
 
@@ -107,6 +147,8 @@ function endGame() {
     startButton.disabled = true;
     restartButton.hidden = false;
 }
+
+setupGameControls();
 
 
 
