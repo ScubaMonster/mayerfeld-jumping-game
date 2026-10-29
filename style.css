@@ -92,9 +92,23 @@ button:focus-visible {
     inset: 0;
 }
 
+/* Shared obstacle appearance */
 .obstacle {
   position: absolute;
-  background:
-    url("Assets/crab.svg")
-    center bottom / contain no-repeat;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+/* Ground obstacle */
+.obstacle--crab {
+  background-image: url("Assets/crab.svg");
+}
+
+/* Overhead obstacle */
+.obstacle--shark {
+  background-image: url("Assets/shark.svg");
+  background-position: center;
+  background-size: cover;
+  transform: scaleX(-1);
 }

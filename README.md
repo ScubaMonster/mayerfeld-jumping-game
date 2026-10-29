@@ -11,7 +11,10 @@ No installation or build step is required.
 
 - Select Start to begin.
 - Press Space to jump over crabs.
-- Each crab passed earns one point.
+- Stay low and let sharks pass overhead.
+- Each obstacle passed earns one point.
+- After five points, occasional shark-and-crab pairs appear.
+  Let the shark pass, then time your jump over the following crab.
 - A collision ends the game.
 - Select Restart to reset the player, obstacles, and score.
 
@@ -22,11 +25,6 @@ No installation or build step is required.
 - `JS/obstacles.js`: spawning, movement, rendering, and collisions.
 - `JS/game.js`: controls, animation loop, scoring, and game lifecycle.
 - `Assets/`: character, obstacle, and background artwork.
-
-## Planned improvements
-
-- Randomized obstacle spawn intervals.
-- Overhead shark obstacles with fair spacing.
 
 ## Artwork credits
 
