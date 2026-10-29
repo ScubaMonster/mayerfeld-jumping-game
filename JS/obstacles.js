@@ -7,6 +7,28 @@ const minSpawnInterval = 1.8;
 const maxSpawnInterval = 3;
 const obstacleSpeed = 200;
 
+const OBSTACLE_TYPES = {
+  crab: {
+    y: 0,
+    width: 45,
+    height: 48,
+    collisionInsetX: 0.15,
+    collisionInsetY: 0.22
+  },
+
+  shark: {
+    y: 100,
+    width: 90,
+    height: 45,
+    collisionInsetX: 0.08,
+    collisionInsetY: 0.12
+  }
+};
+
+const PAIR_UNLOCK_SCORE = 5;
+const PAIR_CHANCE = 0.2;
+const PAIR_GAP = 150;
+
 let spawnInterval = getRandomSpawnInterval();
 
 // Chooses a random time between obstacle spawns.
@@ -14,32 +36,77 @@ function getRandomSpawnInterval() {
     return Math.random() * (maxSpawnInterval - minSpawnInterval) + minSpawnInterval;
 }
 
-// Creates and stores a new obstacle.
-function createObstacle() {
+// Creates and stores an obstacle using its type's settings.
+function createObstacle(type = "crab", offsetX = 0) {
+  const settings = OBSTACLE_TYPES[type];
 
-    const obstacle = {
-        x: WORLD_WIDTH,
-        y: 0,
-        width: 45,
-        height: 48,
-        counted: false,
-        element: null
-    };
+  const obstacle = {
+    type: type,
+    x: WORLD_WIDTH + offsetX,
+    y: settings.y,
+    width: settings.width,
+    height: settings.height,
+    collisionInsetX: settings.collisionInsetX,
+    collisionInsetY: settings.collisionInsetY,
+    counted: false,
+    element: null
+  };
 
-    gameState.obstacles.push(obstacle);
+  gameState.obstacles.push(obstacle);
 }
 
+// Chooses a single obstacle or a paired encounter.
+function chooseEncounter() {
+  if (
+    gameState.score >= PAIR_UNLOCK_SCORE &&
+    Math.random() < PAIR_CHANCE
+  ) {
+    return [
+      { type: "shark", offsetX: 0 },
+      { type: "crab", offsetX: PAIR_GAP }
+    ];
+  }
 
-// Creates obstacles at regular intervals.
+  return [
+    { type: chooseObstacleType(), offsetX: 0 }
+  ];
+}
+
+// Creates the obstacles belonging to an encounter.
+function spawnEncounter(encounter) {
+  encounter.forEach(function (member) {
+    createObstacle(member.type, member.offsetX);
+  });
+}
+
+// Calculates the wait before the next encounter.
+function getNextSpawnInterval(encounter) {
+  const lastMember = encounter[encounter.length - 1];
+
+  return (
+    getRandomSpawnInterval() +
+    lastMember.offsetX / obstacleSpeed
+  );
+}
+
+// Chooses which obstacle to spawn.
+function chooseObstacleType() {
+  return Math.random() < 0.3 ? "shark" : "crab";
+}
+
+// Coordinates encounter spawning and timing.
 function spawnObstacles(deltaTime) {
+  spawnTimer += deltaTime;
 
-    spawnTimer += deltaTime;
+  while (spawnTimer >= spawnInterval) {
+    spawnTimer -= spawnInterval;
 
-    while (spawnTimer >= spawnInterval) {
-        createObstacle();
-        spawnTimer -= spawnInterval;
-        spawnInterval = getRandomSpawnInterval();
-    }
+    const encounter = chooseEncounter();
+
+    spawnEncounter(encounter);
+
+    spawnInterval = getNextSpawnInterval(encounter);
+  }
 }
 
 
@@ -96,7 +163,7 @@ function renderObstacles() {
 
             const box = document.createElement("div");
 
-            box.classList.add("obstacle");
+            box.classList.add("obstacle", `obstacle--${obstacle.type}`);
 
             container.appendChild(box);
 
@@ -146,15 +213,19 @@ function hasCollision() {
   const player = getCollisionBounds(gameState.player, 0.12, 0.16);
 
   for (const obstacle of gameState.obstacles) {
-    const crab = getCollisionBounds(obstacle, 0.15, 0.22);
+    const bounds = getCollisionBounds(
+      obstacle,
+      obstacle.collisionInsetX,
+      obstacle.collisionInsetY
+    );
 
     const collisionX =
-      player.left < crab.right &&
-      player.right > crab.left;
+      player.left < bounds.right &&
+      player.right > bounds.left;
 
     const collisionY =
-      player.bottom < crab.top &&
-      player.top > crab.bottom;
+      player.bottom < bounds.top &&
+      player.top > bounds.bottom;
 
     if (collisionX && collisionY) {
       return true;

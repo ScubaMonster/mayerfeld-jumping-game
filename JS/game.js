@@ -40,7 +40,8 @@ function startGame() {
   renderObstacles();
   renderScore();
 
-  messageElement.textContent = "Game on! Press Space to jump over obstacles.";
+  messageElement.textContent =
+    "Game on! Space to jump over crabs; stay low for sharks.";
 
   startButton.disabled = true;
   restartButton.hidden = true;
@@ -141,4 +142,3 @@ function endGame() {
 }
 
 setupGameControls();
-
